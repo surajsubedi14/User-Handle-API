@@ -4,10 +4,12 @@ import lombok.RequiredArgsConstructor;
 import org.example.coreapi.Entities.Department;
 import org.example.coreapi.Entities.Doctor;
 import org.example.coreapi.Entities.Hospital;
+import org.example.coreapi.Repositories.DepartmentRepository;
 import org.example.coreapi.Repositories.HospitalRepository;
 import org.example.coreapi.Services.AdminService;
 import org.example.userhandleapi.DTO.AuthResponseDto;
 import org.example.userhandleapi.DTO.AuthStatus;
+import org.example.userhandleapi.DTO.DepartmentDTO;
 import org.example.userhandleapi.DTO.HospitalDetaillsUpdateDTO;
 import org.example.userhandleapi.Service.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +28,7 @@ public class AdminController {
 
     private final AdminService adminService;
     private final HospitalRepository hospitalRepository;
+    private final DepartmentRepository departmentRepository;
     private  final EmailService emailService;
     @Autowired
     private PasswordEncoder passwordencoder;
@@ -51,20 +54,20 @@ public class AdminController {
 
 
 
-            var authResponseDto = new AuthResponseDto("", AuthStatus.USER_NOT_CREATED,"");
+            var authResponseDto = new AuthResponseDto("", AuthStatus.USER_NOT_CREATED,"",0L);
             ;
             if (doctors != null) {
-                authResponseDto = new AuthResponseDto("Doctor Added Successfully", AuthStatus.DOCTOR_ADDED_SUCCESSFULLY,doctor.getRole());
+                authResponseDto = new AuthResponseDto("Doctor Added Successfully", AuthStatus.DOCTOR_ADDED_SUCCESSFULLY,doctor.getRole(),0L);
 
             } else {
-                authResponseDto = new AuthResponseDto("Doctor Already Exists", AuthStatus.USER_NOT_CREATED,"");
+                authResponseDto = new AuthResponseDto("Doctor Already Exists", AuthStatus.USER_NOT_CREATED,"",0L);
 
             }
             return ResponseEntity
                     .status(HttpStatus.OK)
                     .body(authResponseDto);
         } catch (Exception e) {
-            var authResponseDto = new AuthResponseDto(null, AuthStatus.USER_NOT_CREATED,"");
+            var authResponseDto = new AuthResponseDto(null, AuthStatus.USER_NOT_CREATED,"",0L);
 
             return ResponseEntity
                     .status(HttpStatus.CONFLICT)
@@ -74,18 +77,32 @@ public class AdminController {
     }
 
     @PostMapping("/updateHospitalDetails/")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<AuthResponseDto> updateHospitalDetails(@RequestParam String id, @RequestBody HospitalDetaillsUpdateDTO hospitalDetaillsUpdateDTO) {
 
         try {
-
             Hospital hospital = hospitalRepository.getHospitalById(Long.valueOf(id));
+
+
             Set<Department> dept = hospital.getDepartment();
-            for (Department department : hospitalDetaillsUpdateDTO.getDepartments()) {
+            for (String dept_name : hospitalDetaillsUpdateDTO.getDepartments()) {
+
+                Department department = departmentRepository.isPresent(dept_name);
+                if(department != null)
+                {
+                    Department newDartment = new Department();
+                    newDartment.setDepartment_id(department.getDepartment_id());
+                    newDartment.setDepartment_name(department.getDepartment_name());
+                    //dept.add(newDartment);
+                    continue;
+
+                }
                 Department newDartment = new Department();
-                newDartment.setDepartment_id(Long.valueOf(department.getDepartment_id()));
-                newDartment.setDepartment_name(department.getDepartment_name());
+                newDartment.setDepartment_name(dept_name);
                 dept.add(newDartment);
             }
+
+
             hospital.setName(hospitalDetaillsUpdateDTO.getName());
             hospital.setEmail(hospitalDetaillsUpdateDTO.getEmail());
             hospital.setPhoneNumber(hospitalDetaillsUpdateDTO.getPhoneNumber());
@@ -94,13 +111,13 @@ public class AdminController {
             hospital.setDepartment(dept);
             hospitalRepository.save(hospital);
 
-            var authResponseDto = new AuthResponseDto("Hospital Details Updated Successfully", AuthStatus.SUCCESS,"");
+            var authResponseDto = new AuthResponseDto("Hospital Details Updated Successfully", AuthStatus.SUCCESS,"",0L);
 
             return ResponseEntity
                     .status(HttpStatus.OK)
                     .body(authResponseDto);
         } catch (Exception e) {
-            var authResponseDto = new AuthResponseDto("Hospital Details Not Updated" + " " + e, AuthStatus.UNSUCCESSFUL,"");
+            var authResponseDto = new AuthResponseDto("Hospital Details Not Updated" + " " + e, AuthStatus.UNSUCCESSFUL,"",0L);
 
             return ResponseEntity
                     .status(HttpStatus.CONFLICT)
