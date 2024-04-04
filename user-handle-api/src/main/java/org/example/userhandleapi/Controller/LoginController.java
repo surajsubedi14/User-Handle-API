@@ -42,16 +42,17 @@ public class LoginController {
     public ResponseEntity<AuthResponseDto> addUser(@RequestBody AuthRequest authRequest){
         Authentication authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequest.getEmail(), authRequest.getPassword()));
         var jwtToken = jwtService.generateToken(authRequest.getEmail());
-        System.out.println(jwtToken);
         if(Objects.equals(authRequest.getRole(), "ADMIN"))
         {
-            var authResponseDto = new AuthResponseDto(jwtToken, AuthStatus.LOGIN_SUCCESS,"ADMIN");
+
+
+            var authResponseDto = new AuthResponseDto(jwtToken, AuthStatus.LOGIN_SUCCESS,hospitalRepository.findByEmail(authRequest.getEmail()).getRole(),hospitalRepository.findByEmail(authRequest.getEmail()).getHospital_id());
             return ResponseEntity
                     .status(HttpStatus.OK)
                     .body(authResponseDto);
         }
         else {
-            var authResponseDto = new AuthResponseDto(jwtToken, AuthStatus.LOGIN_SUCCESS,"PATIENT");
+            var authResponseDto = new AuthResponseDto(jwtToken, AuthStatus.LOGIN_SUCCESS,userRepository.findByEmails(authRequest.getEmail()).getRole(),userRepository.findByEmails(authRequest.getEmail()).getUser_id());
             return ResponseEntity
                     .status(HttpStatus.OK)
                     .body(authResponseDto);
