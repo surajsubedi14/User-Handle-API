@@ -4,10 +4,12 @@ import lombok.RequiredArgsConstructor;
 import org.example.coreapi.Entities.Department;
 import org.example.coreapi.Entities.Doctor;
 import org.example.coreapi.Entities.Hospital;
+import org.example.coreapi.Repositories.DepartmentRepository;
 import org.example.coreapi.Repositories.HospitalRepository;
 import org.example.coreapi.Services.AdminService;
 import org.example.userhandleapi.DTO.AuthResponseDto;
 import org.example.userhandleapi.DTO.AuthStatus;
+import org.example.userhandleapi.DTO.DepartmentDTO;
 import org.example.userhandleapi.DTO.HospitalDetaillsUpdateDTO;
 import org.example.userhandleapi.Service.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +28,7 @@ public class AdminController {
 
     private final AdminService adminService;
     private final HospitalRepository hospitalRepository;
+    private final DepartmentRepository departmentRepository;
     private  final EmailService emailService;
     @Autowired
     private PasswordEncoder passwordencoder;
@@ -78,28 +81,35 @@ public class AdminController {
     public ResponseEntity<AuthResponseDto> updateHospitalDetails(@RequestParam String id, @RequestBody HospitalDetaillsUpdateDTO hospitalDetaillsUpdateDTO) {
 
         try {
-
             Hospital hospital = hospitalRepository.getHospitalById(Long.valueOf(id));
-            //System.out.println(hospital.getName());
-            Set<Department> dept = hospital.getDepartment();
-//            for (Department department : hospitalDetaillsUpdateDTO.getDepartments()) {
-//                Department newDartment = new Department();
-//                newDartment.setDepartment_id(Long.valueOf(department.getDepartment_id()));
-//                newDartment.setDepartment_name(department.getDepartment_name());
-//                dept.add(newDartment);
-//            }
 
-            for(String d : hospitalDetaillsUpdateDTO.getDepartments())
-            {
-                System.out.println(d);
+
+            Set<Department> dept = hospital.getDepartment();
+            for (String dept_name : hospitalDetaillsUpdateDTO.getDepartments()) {
+
+                Department department = departmentRepository.isPresent(dept_name);
+                if(department != null)
+                {
+                    Department newDartment = new Department();
+                    newDartment.setDepartment_id(department.getDepartment_id());
+                    newDartment.setDepartment_name(department.getDepartment_name());
+                    //dept.add(newDartment);
+                    continue;
+
+                }
+                Department newDartment = new Department();
+                newDartment.setDepartment_name(dept_name);
+                dept.add(newDartment);
             }
-//            hospital.setName(hospitalDetaillsUpdateDTO.getName());
-//            hospital.setEmail(hospitalDetaillsUpdateDTO.getEmail());
-//            hospital.setPhoneNumber(hospitalDetaillsUpdateDTO.getPhoneNumber());
-//            hospital.setAddress(hospitalDetaillsUpdateDTO.getAddress());
-//            hospital.setWebsite(hospitalDetaillsUpdateDTO.getWebsite());
-//            hospital.setDepartment(dept);
-//            hospitalRepository.save(hospital);
+
+
+            hospital.setName(hospitalDetaillsUpdateDTO.getName());
+            hospital.setEmail(hospitalDetaillsUpdateDTO.getEmail());
+            hospital.setPhoneNumber(hospitalDetaillsUpdateDTO.getPhoneNumber());
+            hospital.setAddress(hospitalDetaillsUpdateDTO.getAddress());
+            hospital.setWebsite(hospitalDetaillsUpdateDTO.getWebsite());
+            hospital.setDepartment(dept);
+            hospitalRepository.save(hospital);
 
             var authResponseDto = new AuthResponseDto("Hospital Details Updated Successfully", AuthStatus.SUCCESS,"",0L);
 
