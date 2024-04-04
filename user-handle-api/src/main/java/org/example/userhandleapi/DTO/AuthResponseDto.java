@@ -1,4 +1,4 @@
 package org.example.userhandleapi.DTO;
 
-public record AuthResponseDto(String token, AuthStatus authStatus,String role){
+public record AuthResponseDto(String token, AuthStatus authStatus,String role,Long id){
 }

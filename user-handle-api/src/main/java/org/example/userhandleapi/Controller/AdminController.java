@@ -51,20 +51,20 @@ public class AdminController {
 
 
 
-            var authResponseDto = new AuthResponseDto("", AuthStatus.USER_NOT_CREATED,"");
+            var authResponseDto = new AuthResponseDto("", AuthStatus.USER_NOT_CREATED,"",0L);
             ;
             if (doctors != null) {
-                authResponseDto = new AuthResponseDto("Doctor Added Successfully", AuthStatus.DOCTOR_ADDED_SUCCESSFULLY,doctor.getRole());
+                authResponseDto = new AuthResponseDto("Doctor Added Successfully", AuthStatus.DOCTOR_ADDED_SUCCESSFULLY,doctor.getRole(),0L);
 
             } else {
-                authResponseDto = new AuthResponseDto("Doctor Already Exists", AuthStatus.USER_NOT_CREATED,"");
+                authResponseDto = new AuthResponseDto("Doctor Already Exists", AuthStatus.USER_NOT_CREATED,"",0L);
 
             }
             return ResponseEntity
                     .status(HttpStatus.OK)
                     .body(authResponseDto);
         } catch (Exception e) {
-            var authResponseDto = new AuthResponseDto(null, AuthStatus.USER_NOT_CREATED,"");
+            var authResponseDto = new AuthResponseDto(null, AuthStatus.USER_NOT_CREATED,"",0L);
 
             return ResponseEntity
                     .status(HttpStatus.CONFLICT)
@@ -74,33 +74,40 @@ public class AdminController {
     }
 
     @PostMapping("/updateHospitalDetails/")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<AuthResponseDto> updateHospitalDetails(@RequestParam String id, @RequestBody HospitalDetaillsUpdateDTO hospitalDetaillsUpdateDTO) {
 
         try {
 
             Hospital hospital = hospitalRepository.getHospitalById(Long.valueOf(id));
+            //System.out.println(hospital.getName());
             Set<Department> dept = hospital.getDepartment();
-            for (Department department : hospitalDetaillsUpdateDTO.getDepartments()) {
-                Department newDartment = new Department();
-                newDartment.setDepartment_id(Long.valueOf(department.getDepartment_id()));
-                newDartment.setDepartment_name(department.getDepartment_name());
-                dept.add(newDartment);
-            }
-            hospital.setName(hospitalDetaillsUpdateDTO.getName());
-            hospital.setEmail(hospitalDetaillsUpdateDTO.getEmail());
-            hospital.setPhoneNumber(hospitalDetaillsUpdateDTO.getPhoneNumber());
-            hospital.setAddress(hospitalDetaillsUpdateDTO.getAddress());
-            hospital.setWebsite(hospitalDetaillsUpdateDTO.getWebsite());
-            hospital.setDepartment(dept);
-            hospitalRepository.save(hospital);
+//            for (Department department : hospitalDetaillsUpdateDTO.getDepartments()) {
+//                Department newDartment = new Department();
+//                newDartment.setDepartment_id(Long.valueOf(department.getDepartment_id()));
+//                newDartment.setDepartment_name(department.getDepartment_name());
+//                dept.add(newDartment);
+//            }
 
-            var authResponseDto = new AuthResponseDto("Hospital Details Updated Successfully", AuthStatus.SUCCESS,"");
+            for(String d : hospitalDetaillsUpdateDTO.getDepartments())
+            {
+                System.out.println(d);
+            }
+//            hospital.setName(hospitalDetaillsUpdateDTO.getName());
+//            hospital.setEmail(hospitalDetaillsUpdateDTO.getEmail());
+//            hospital.setPhoneNumber(hospitalDetaillsUpdateDTO.getPhoneNumber());
+//            hospital.setAddress(hospitalDetaillsUpdateDTO.getAddress());
+//            hospital.setWebsite(hospitalDetaillsUpdateDTO.getWebsite());
+//            hospital.setDepartment(dept);
+//            hospitalRepository.save(hospital);
+
+            var authResponseDto = new AuthResponseDto("Hospital Details Updated Successfully", AuthStatus.SUCCESS,"",0L);
 
             return ResponseEntity
                     .status(HttpStatus.OK)
                     .body(authResponseDto);
         } catch (Exception e) {
-            var authResponseDto = new AuthResponseDto("Hospital Details Not Updated" + " " + e, AuthStatus.UNSUCCESSFUL,"");
+            var authResponseDto = new AuthResponseDto("Hospital Details Not Updated" + " " + e, AuthStatus.UNSUCCESSFUL,"",0L);
 
             return ResponseEntity
                     .status(HttpStatus.CONFLICT)
