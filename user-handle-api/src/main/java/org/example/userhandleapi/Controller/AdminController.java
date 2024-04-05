@@ -84,23 +84,21 @@ public class AdminController {
             Hospital hospital = hospitalRepository.getHospitalById(Long.valueOf(id));
 
 
-            Set<Department> dept = hospital.getDepartment();
-            for (String dept_name : hospitalDetaillsUpdateDTO.getDepartments()) {
-
-                Department department = departmentRepository.isPresent(dept_name);
-                if(department != null)
-                {
-                    Department newDartment = new Department();
-                    newDartment.setDepartment_id(department.getDepartment_id());
-                    newDartment.setDepartment_name(department.getDepartment_name());
-                    //dept.add(newDartment);
-                    continue;
-
-                }
-                Department newDartment = new Department();
-                newDartment.setDepartment_name(dept_name);
-                dept.add(newDartment);
-            }
+//            Set<Department> dept = hospital.getDepartment();
+//            for (String dept_name : hospitalDetaillsUpdateDTO.getDepartments()) {
+//
+//                Department department = departmentRepository.isPresent(dept_name);
+//                if(department != null)
+//                {
+//
+//                    dept.add(department);
+//                    continue;
+//
+//                }
+//                Department newDartment = new Department();
+//                newDartment.setDepartment_name(dept_name);
+//                dept.add(newDartment);
+//            }
 
 
             hospital.setName(hospitalDetaillsUpdateDTO.getName());
@@ -108,7 +106,7 @@ public class AdminController {
             hospital.setPhoneNumber(hospitalDetaillsUpdateDTO.getPhoneNumber());
             hospital.setAddress(hospitalDetaillsUpdateDTO.getAddress());
             hospital.setWebsite(hospitalDetaillsUpdateDTO.getWebsite());
-            hospital.setDepartment(dept);
+            hospital.setDepartment(hospitalDetaillsUpdateDTO.getDepartments());
             hospitalRepository.save(hospital);
 
             var authResponseDto = new AuthResponseDto("Hospital Details Updated Successfully", AuthStatus.SUCCESS,"",0L);
