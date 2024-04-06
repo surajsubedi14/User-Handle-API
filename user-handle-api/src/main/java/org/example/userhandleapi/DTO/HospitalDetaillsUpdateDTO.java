@@ -13,7 +13,7 @@ public class HospitalDetaillsUpdateDTO {
     private String phoneNumber;
     private String address;
     private String website;
-    private List<String> departments;;
+    private Set<Department> departments;;
 
 
 
