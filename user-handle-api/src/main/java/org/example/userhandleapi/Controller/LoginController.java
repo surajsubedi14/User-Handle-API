@@ -1,5 +1,6 @@
 package org.example.userhandleapi.Controller;
 
+import org.example.coreapi.Entities.User;
 import org.example.coreapi.Repositories.HospitalRepository;
 import org.example.coreapi.Repositories.UserRepository;
 import org.example.userhandleapi.DTO.AuthResponseDto;
@@ -61,4 +62,6 @@ public class LoginController {
 
 
     }
+
+
 }
