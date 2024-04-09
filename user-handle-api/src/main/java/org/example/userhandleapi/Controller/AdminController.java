@@ -38,6 +38,7 @@ public class AdminController {
     public ResponseEntity<AuthResponseDto> addDoctor(@RequestParam String id, @RequestBody Doctor doctor) {
         Hospital hospital = hospitalRepository.getHospitalById(Long.valueOf(id));
         //System.out.println(hospital.getRole());
+        doctor.setActive(true);
         doctor.setHospital(hospital);
         try {
 
@@ -76,7 +77,7 @@ public class AdminController {
 
     }
 
-    @PostMapping("/updateHospitalDetails/")
+    @PutMapping("/updateHospitalDetails/")
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<AuthResponseDto> updateHospitalDetails(@RequestParam String id, @RequestBody HospitalDetaillsUpdateDTO hospitalDetaillsUpdateDTO) {
 
