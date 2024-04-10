@@ -1,5 +1,6 @@
 package org.example.userhandleapi.Controller;
 
+import org.example.coreapi.Entities.Hospital;
 import org.example.coreapi.Entities.User;
 import org.example.coreapi.Repositories.HospitalRepository;
 import org.example.coreapi.Repositories.UserRepository;
@@ -42,9 +43,28 @@ public class LoginController {
     @PostMapping("/login")
     public ResponseEntity<AuthResponseDto> addUser(@RequestBody AuthRequest authRequest){
         Authentication authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequest.getEmail(), authRequest.getPassword()));
-        var jwtToken = jwtService.generateToken(authRequest.getEmail());
-        if(Objects.equals(authRequest.getRole(), "ADMIN"))
+//        var jwtToken = jwtService.generateToken(authRequest.getEmail());
+//        if(Objects.equals(authRequest.getRole(), "ADMIN"))
+//        {
+//
+//
+//            var authResponseDto = new AuthResponseDto(jwtToken, AuthStatus.LOGIN_SUCCESS,hospitalRepository.findByEmail(authRequest.getEmail()).getRole(),hospitalRepository.findByEmail(authRequest.getEmail()).getHospital_id());
+//            return ResponseEntity
+//                    .status(HttpStatus.OK)
+//                    .body(authResponseDto);
+//        }
+//        else {
+//            var authResponseDto = new AuthResponseDto(jwtToken, AuthStatus.LOGIN_SUCCESS,userRepository.findByEmails(authRequest.getEmail()).getRole(),userRepository.findByEmails(authRequest.getEmail()).getUser_id());
+//            return ResponseEntity
+//                    .status(HttpStatus.OK)
+//                    .body(authResponseDto);
+//        }
+//        System.out.println(hospitalRepository.findByEmail(authRequest.getEmail()).getName());
+        Hospital hospital = hospitalRepository.findByEmail(authRequest.getEmail());
+        User user = userRepository.findByEmails(authRequest.getEmail());
+        if(hospital != null && Objects.equals(hospital.getRole(), authRequest.getRole()))
         {
+            var jwtToken = jwtService.generateToken(authRequest.getEmail());
 
 
             var authResponseDto = new AuthResponseDto(jwtToken, AuthStatus.LOGIN_SUCCESS,hospitalRepository.findByEmail(authRequest.getEmail()).getRole(),hospitalRepository.findByEmail(authRequest.getEmail()).getHospital_id());
@@ -52,12 +72,17 @@ public class LoginController {
                     .status(HttpStatus.OK)
                     .body(authResponseDto);
         }
-        else {
+        else if(user != null && (Objects.equals(user.getRole(), authRequest.getRole())) ) {
+            var jwtToken = jwtService.generateToken(authRequest.getEmail());
             var authResponseDto = new AuthResponseDto(jwtToken, AuthStatus.LOGIN_SUCCESS,userRepository.findByEmails(authRequest.getEmail()).getRole(),userRepository.findByEmails(authRequest.getEmail()).getUser_id());
             return ResponseEntity
                     .status(HttpStatus.OK)
                     .body(authResponseDto);
         }
+         var authResponseDto = new AuthResponseDto("", AuthStatus.LOGIN_FAILED,"User Doesn't Exists",null);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(authResponseDto);
 
 
 
