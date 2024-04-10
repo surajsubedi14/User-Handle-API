@@ -82,26 +82,7 @@ public class AdminController {
     public ResponseEntity<AuthResponseDto> updateHospitalDetails(@RequestParam String id, @RequestBody HospitalDetaillsUpdateDTO hospitalDetaillsUpdateDTO) {
 
         try {
-            Hospital hospital = hospitalRepository.getHospitalById(Long.valueOf(id));
-
-
-//            Set<Department> dept = hospital.getDepartment();
-//            for (String dept_name : hospitalDetaillsUpdateDTO.getDepartments()) {
-//
-//                Department department = departmentRepository.isPresent(dept_name);
-//                if(department != null)
-//                {
-//
-//                    dept.add(department);
-//                    continue;
-//
-//                }
-//                Department newDartment = new Department();
-//                newDartment.setDepartment_name(dept_name);
-//                dept.add(newDartment);
-//            }
-
-
+            Hospital hospital = hospitalRepository.getHospitalById(Long.parseLong(id));
             hospital.setName(hospitalDetaillsUpdateDTO.getName());
             hospital.setEmail(hospitalDetaillsUpdateDTO.getEmail());
             hospital.setPhoneNumber(hospitalDetaillsUpdateDTO.getPhoneNumber());
@@ -109,7 +90,6 @@ public class AdminController {
             hospital.setWebsite(hospitalDetaillsUpdateDTO.getWebsite());
             hospital.setDepartment(hospitalDetaillsUpdateDTO.getDepartments());
             hospitalRepository.save(hospital);
-
             var authResponseDto = new AuthResponseDto("Hospital Details Updated Successfully", AuthStatus.SUCCESS,"",0L);
 
             return ResponseEntity
