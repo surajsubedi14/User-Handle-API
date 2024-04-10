@@ -2,6 +2,7 @@ package org.example.userhandleapi.Service;
 
 import org.example.coreapi.Entities.OTPStorage;
 import org.example.coreapi.Repositories.OTPStorageRepository;
+import org.example.userhandleapi.Helper.EmailHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
@@ -22,16 +23,18 @@ public class EmailService {
     @Autowired
     private OTPStorageRepository otpSrorageRepo;
 
+
+
     private static final int OTP_EXPIRATION_MINUTES = 5;
 
+
     public void sendEmail(String to) {
-        String generatedOTP = generateOTP(6);
+        String generatedOTP = EmailHelper.generateOTP(6);
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(to);
         message.setSubject("Echikitsa Login OTP");
         message.setText("Your one time password is : " + generatedOTP);
         Instant expirationTime = Instant.now().plus(OTP_EXPIRATION_MINUTES, ChronoUnit.MINUTES);
-
         OTPStorage formate = new OTPStorage();
         formate.setEmail(to);
         formate.setGeneratedOTP(generatedOTP);
@@ -41,7 +44,6 @@ public class EmailService {
         try {
             javaMailSender.send(message);
             OTPStorage otpData = otpSrorageRepo.findEmail(to);
-            //System.out.println(otpData.getEmail());
             if (otpData == null) {
                 otpSrorageRepo.save(formate);
             } else {
@@ -54,18 +56,30 @@ public class EmailService {
     }
 
     public void sendPasswordToDoctor(String to,String password) {
-        //String generatedOTP = generateOTP(6);
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(to);
         message.setSubject("Echikitsa Login Password");
         message.setText("Your password for eChikitsa app is : " + password);
-       // Instant expirationTime = Instant.now().plus(OTP_EXPIRATION_MINUTES, ChronoUnit.MINUTES);
+        try {
+            javaMailSender.send(message);
+            System.out.println("Email sent successfully!");
+        } catch (MailException e) {
+            System.err.println("Failed to send email: " + e.getMessage());
+        }
+    }
 
-//        OTPStorage formate = new OTPStorage();
-//        formate.setEmail(to);
-//        formate.setGeneratedOTP(generatedOTP);
-//        formate.setExpirationTime(expirationTime);
+    public void sendStatusToDoctor(String to, String status, String doctorName, String hospitalName) {
 
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(to);
+        message.setSubject("Your Status on eChikitsa Got update by your Hospital");
+        if(Objects.equals(status, "activated"))
+        {
+            message.setText(EmailHelper.getEmailBodyForActive(status, doctorName, hospitalName));
+        }
+        else {
+            message.setText(EmailHelper.getEmailBodyForDeactive(status, doctorName, hospitalName));
+        }
 
         try {
             javaMailSender.send(message);
@@ -75,18 +89,11 @@ public class EmailService {
         }
     }
 
-    private static final String OTP_CHARS = "0123456789";
-    private static final SecureRandom RANDOM = new SecureRandom();
 
-    public static String generateOTP(int length) {
-        StringBuilder otp = new StringBuilder();
-        for (int i = 0; i < length; i++) {
-            int randomIndex = RANDOM.nextInt(OTP_CHARS.length());
-            char otpChar = OTP_CHARS.charAt(randomIndex);
-            otp.append(otpChar);
-        }
-        return otp.toString();
-    }
+
+
+
+
 
     // Validate the OTP entered by the user
     public boolean validateOTP(String to, String enteredOTP) {
