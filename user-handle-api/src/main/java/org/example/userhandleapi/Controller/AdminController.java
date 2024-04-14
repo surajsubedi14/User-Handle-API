@@ -88,7 +88,6 @@ public class AdminController {
             hospital.setWebsite(hospitalDetaillsUpdateDTO.getWebsite());
             hospital.setDepartment(hospitalDetaillsUpdateDTO.getDepartments());
             hospitalRepository.save(hospital);
-
             var authResponseDto = new AuthResponseDto("Hospital Details Updated Successfully", AuthStatus.SUCCESS,"",0L);
 
             return ResponseEntity

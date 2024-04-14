@@ -43,11 +43,10 @@ public class PatientController {
     }
 
 
-    @PostMapping("/update-details/")
+    @PutMapping("/update-details/")
     public ResponseEntity<String> updateUser(@RequestParam String id, @RequestBody Patient patient) {
 
         try {
-            // update patient details
             patientService.updateUserDetails(Long.valueOf(id), patient);
             return ResponseEntity.ok("Patient Details Updated successfully");
         } catch (Exception ex) {
