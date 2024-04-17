@@ -49,7 +49,7 @@ public class SecurityConfig {
         //filter our request
         httpSecurity.authorizeHttpRequests(
                 requestMatcher->
-                        requestMatcher.requestMatchers("/auth/welcome","/auth/addUser","/auth/login","/patient/registerPatient","/admin/registerDoctor","/hospital/add-hospital", "/auth/reset-password-otp","/auth/reset-password","/email/sendEmail","/email/valOtp","/admin/updateHospitalDetails/**").permitAll()
+                        requestMatcher.requestMatchers("/auth/welcome","/auth/addUser","/auth/login","/auth/login-using-otp","/patient/registerPatient","/admin/registerDoctor","/hospital/add-hospital", "/auth/reset-password-otp","/auth/reset-password","/email/sendEmail","/email/valOtp","/admin/updateHospitalDetails/**").permitAll()
 //                                .requestMatchers("/api/signUp").permitAll()
 //                                .requestMatchers("/api/hospital/register").permitAll()
 //                                .requestMatchers("/api/hospital/register").permitAll()

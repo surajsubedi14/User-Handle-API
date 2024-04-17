@@ -32,7 +32,7 @@ public class EmailService {
         String generatedOTP = EmailHelper.generateOTP(6);
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(to);
-        message.setSubject("Echikitsa Login OTP");
+        message.setSubject("eChikitsa Login OTP");
         message.setText("Your one time password is : " + generatedOTP);
         Instant expirationTime = Instant.now().plus(OTP_EXPIRATION_MINUTES, ChronoUnit.MINUTES);
         OTPStorage formate = new OTPStorage();
@@ -98,12 +98,11 @@ public class EmailService {
     // Validate the OTP entered by the user
     public boolean validateOTP(String to, String enteredOTP) {
         OTPStorage otpData = otpSrorageRepo.findEmail(to);
-        // System.out.println(otpData.getGeneratedOTP());
         if (otpData == null || otpData.getExpirationTime().isBefore(Instant.now())) {
-            return false; // No OTP found for the user
+            return false;
         }
         if (Objects.equals(otpData.getGeneratedOTP(), enteredOTP)) {
-            return true; // OTP has expired
+            return true;
         }
         return false;
     }
