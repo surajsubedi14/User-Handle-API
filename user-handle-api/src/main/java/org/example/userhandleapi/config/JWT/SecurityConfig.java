@@ -22,7 +22,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Configuration
@@ -41,7 +43,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
 
         //disable CORS
-        httpSecurity.cors(corsConfig->corsConfig.configurationSource(getConfigurationSource()));
+       // httpSecurity.cors(corsConfig->corsConfig.configurationSource(getConfigurationSource()));
 
         //disable csrf
         httpSecurity.csrf(AbstractHttpConfigurer::disable);
@@ -49,7 +51,7 @@ public class SecurityConfig {
         //filter our request
         httpSecurity.authorizeHttpRequests(
                 requestMatcher->
-                        requestMatcher.requestMatchers("/auth/welcome","/auth/addUser","/auth/login","/auth/login-using-otp","/patient/registerPatient","/admin/registerDoctor","/hospital/add-hospital", "/auth/reset-password-otp","/auth/reset-password","/email/sendEmail","/email/valOtp","/admin/updateHospitalDetails/**").permitAll()
+                        requestMatcher.requestMatchers("/user-handle/auth/login","/user-handle/auth/login-using-otp","/user-handle/patient/registerPatient","/user-handle/admin/registerDoctor", "/user-handle/auth/reset-password-otp","/user-handle/auth/reset-password","/user-handle/email/sendEmail","/user-handle/email/valOtp","/user-handle/hospital/add-hospital").permitAll()
 //                                .requestMatchers("/api/signUp").permitAll()
 //                                .requestMatchers("/api/hospital/register").permitAll()
 //                                .requestMatchers("/api/hospital/register").permitAll()
@@ -99,13 +101,14 @@ public class SecurityConfig {
         corsConfiguration.setAllowedMethods(List.of("*"));
         corsConfiguration.addAllowedHeader("*");
 
-        corsConfiguration.setAllowedOrigins(List.of("http://localhost:3000", "http://localhost:8080"));
+        corsConfiguration.setAllowedOrigins(List.of("http://localhost:3000", "http://localhost:8080","http://localhost:8761","http://localhost:8083"));
         corsConfiguration.setAllowedHeaders(List.of("Content-Type","text/plain","Authorization"));
 
         var source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", corsConfiguration);
 
         return  source;
+
     }
 
 }

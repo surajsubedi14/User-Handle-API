@@ -2,17 +2,16 @@ package org.example.userhandleapi.Controller;
 
 import lombok.RequiredArgsConstructor;
 import org.example.coreapi.Entities.Doctor;
-import org.example.coreapi.Entities.User;
 import org.example.coreapi.Services.DoctorServices;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-@CrossOrigin
+
 @RestController
 @RequiredArgsConstructor
-@RequestMapping ("/doctor")
+@RequestMapping ("/user-handle/doctor")
 public class DoctorController {
     @Autowired
     DoctorServices doctorServices;
@@ -30,10 +29,5 @@ public class DoctorController {
 
     }
 
-//    @PutMapping("/update-details/")
-//    public String updateUser() {
-//
-//        return "hgasdfjh";
-//    }
 
 }

@@ -7,9 +7,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-@CrossOrigin
+
 @RestController
-@RequestMapping("/hospital")
+@RequestMapping("/user-handle/hospital")
 public class HospitalController {
     @Autowired
     public HospitalServices hospitalServices;
