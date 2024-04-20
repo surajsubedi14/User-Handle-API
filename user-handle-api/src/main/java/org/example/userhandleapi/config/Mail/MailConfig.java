@@ -13,13 +13,6 @@ public class MailConfig {
     public JavaMailSender javaMailSender() {
         JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
 
-        // Set mail server properties
-//        mailSender.setHost("smtp.gmail.com");
-//        mailSender.setPort(587);
-//        mailSender.setUsername("ajaygidd3047@gmail.com");
-//        mailSender.setPassword("parp khcv apxu ugjo");
-
-        //JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
         mailSender.setHost("smtp.gmail.com");
         mailSender.setPort(587);
         mailSender.setUsername("ajaygidd3047@gmail.com");
@@ -34,8 +27,7 @@ public class MailConfig {
         return mailSender;
     }
 
-    // Configure additional properties, if needed
-    // e.g., mailSender.setDefaultEncoding("UTF-8");
+
 
 
 
