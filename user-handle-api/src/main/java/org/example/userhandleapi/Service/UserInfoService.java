@@ -39,6 +39,7 @@ public class UserInfoService implements UserDetailsService {
 //                .orElseThrow(()-> new UsernameNotFoundException("User not found"+username));
 //
 //    }
+    //Spring security class and we overrided the loadUserByUsername method
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Optional<User> userInfo = Optional.ofNullable(userInfoRepository.findByEmails(username));
@@ -61,18 +62,6 @@ public class UserInfoService implements UserDetailsService {
 
 
 
-    public String addUser(Patient userInfo){
-        userInfo.setPassword(passwordEncoder.encode(userInfo.getPassword()));
-        // userInfoRepository.save(userInfo);
-        patientRepository.save(userInfo);
-        return "User added successfully";
-    }
-    public List<User> getAllUser(){
-        return (List<User>) userInfoRepository.findAll();
-    }
-    public User getUser(Integer id){
-        return userInfoRepository.findById(Long.valueOf(id)).get();
-    }
 
 
 }
