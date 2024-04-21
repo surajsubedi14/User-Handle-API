@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
@@ -43,53 +44,53 @@ public class LoginController {
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponseDto> addUser(@RequestBody AuthRequest authRequest){
-        Authentication authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequest.getEmail(), authRequest.getPassword()));
-//        var jwtToken = jwtService.generateToken(authRequest.getEmail());
-//        if(Objects.equals(authRequest.getRole(), "ADMIN"))
-//        {
-//
-//
-//            var authResponseDto = new AuthResponseDto(jwtToken, AuthStatus.LOGIN_SUCCESS,hospitalRepository.findByEmail(authRequest.getEmail()).getRole(),hospitalRepository.findByEmail(authRequest.getEmail()).getHospital_id());
-//            return ResponseEntity
-//                    .status(HttpStatus.OK)
-//                    .body(authResponseDto);
-//        }
-//        else {
-//            var authResponseDto = new AuthResponseDto(jwtToken, AuthStatus.LOGIN_SUCCESS,userRepository.findByEmails(authRequest.getEmail()).getRole(),userRepository.findByEmails(authRequest.getEmail()).getUser_id());
-//            return ResponseEntity
-//                    .status(HttpStatus.OK)
-//                    .body(authResponseDto);
-//        }
-//        System.out.println(hospitalRepository.findByEmail(authRequest.getEmail()).getName());
-        Hospital hospital = hospitalRepository.findByEmail(authRequest.getEmail());
-        User user = userRepository.findByEmails(authRequest.getEmail());
-        if(hospital != null && Objects.equals(hospital.getRole(), authRequest.getRole()))
-        {
-            var jwtToken = jwtService.generateToken(authRequest.getEmail());
 
 
-            var authResponseDto = new AuthResponseDto(jwtToken, AuthStatus.LOGIN_SUCCESS,hospitalRepository.findByEmail(authRequest.getEmail()).getRole(),hospitalRepository.findByEmail(authRequest.getEmail()).getHospital_id());
+        try {
+            Authentication authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequest.getEmail(), authRequest.getPassword()));
+
+            Hospital hospital = hospitalRepository.findByEmail(authRequest.getEmail());
+            User user = userRepository.findByEmails(authRequest.getEmail());
+
+            if (authenticate.isAuthenticated()) {
+                if (hospital != null && Objects.equals(hospital.getRole(), authRequest.getRole())) {
+                    var jwtToken = jwtService.generateToken(authRequest.getEmail());
+                    var authResponseDto = new AuthResponseDto(jwtToken, AuthStatus.LOGIN_SUCCESS, hospital.getRole(), hospital.getHospital_id());
+                    return ResponseEntity
+                            .status(HttpStatus.OK)
+                            .body(authResponseDto);
+                } else if (user != null && Objects.equals(user.getRole(), authRequest.getRole())) {
+                    var jwtToken = jwtService.generateToken(authRequest.getEmail());
+                    var authResponseDto = new AuthResponseDto(jwtToken, AuthStatus.LOGIN_SUCCESS, user.getRole(), user.getUser_id());
+                    return ResponseEntity
+                            .status(HttpStatus.OK)
+                            .body(authResponseDto);
+                } else {
+                    var authResponseDto = new AuthResponseDto("", AuthStatus.LOGIN_FAILED, "User Doesn't Exists", null);
+                    return ResponseEntity
+                            .status(HttpStatus.OK)
+                            .body(authResponseDto);
+                }
+            } else {
+                var authResponseDto = new AuthResponseDto("", AuthStatus.LOGIN_FAILED, "Authentication Failed", null);
+                return ResponseEntity
+                        .status(HttpStatus.UNAUTHORIZED)
+                        .body(authResponseDto);
+            }
+        } catch (AuthenticationException e) {
+            var authResponseDto = new AuthResponseDto("", AuthStatus.LOGIN_FAILED, "Authentication Exception: " + e.getMessage(), null);
             return ResponseEntity
-                    .status(HttpStatus.OK)
+                    .status(HttpStatus.UNAUTHORIZED)
+                    .body(authResponseDto);
+        } catch (Exception e) {
+            var authResponseDto = new AuthResponseDto("", AuthStatus.LOGIN_FAILED, "Exception: " + e.getMessage(), null);
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(authResponseDto);
         }
-        else if(user != null && (Objects.equals(user.getRole(), authRequest.getRole())) ) {
-            var jwtToken = jwtService.generateToken(authRequest.getEmail());
-            var authResponseDto = new AuthResponseDto(jwtToken, AuthStatus.LOGIN_SUCCESS,userRepository.findByEmails(authRequest.getEmail()).getRole(),userRepository.findByEmails(authRequest.getEmail()).getUser_id());
-            return ResponseEntity
-                    .status(HttpStatus.OK)
-                    .body(authResponseDto);
-        }
-         var authResponseDto = new AuthResponseDto("", AuthStatus.LOGIN_FAILED,"User Doesn't Exists",null);
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(authResponseDto);
+}
 
-
-
-    }
-
-    @PostMapping("/logout")
+        @PostMapping("/logout")
     public void logout() {
         // Invalidate session
         SecurityContextHolder.clearContext();

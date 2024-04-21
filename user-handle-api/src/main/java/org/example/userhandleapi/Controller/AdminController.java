@@ -9,6 +9,7 @@ import org.example.coreapi.Repositories.DoctorRepository;
 import org.example.coreapi.Repositories.HospitalRepository;
 import org.example.coreapi.Services.AdminService;
 import org.example.coreapi.Services.DoctorServices;
+import org.example.coreapi.Services.PatientService;
 import org.example.userhandleapi.DTO.AuthResponseDto;
 import org.example.userhandleapi.DTO.AuthStatus;
 import org.example.userhandleapi.DTO.DepartmentDTO;
@@ -36,6 +37,7 @@ public class AdminController {
     private  final EmailService emailService;
     private final DoctorServices doctorServices;
     private final DoctorRepository doctorRepository;
+    private final PatientService patientService;
     @Autowired
     private PasswordEncoder passwordencoder;
 
@@ -45,7 +47,6 @@ public class AdminController {
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<AuthResponseDto> addDoctor(@RequestParam String id, @RequestBody Doctor doctor) {
         Hospital hospital = hospitalRepository.getHospitalById(Long.valueOf(id));
-        //System.out.println(hospital.getRole());
         doctor.setActive(true);
         doctor.setHospital(hospital);
         try {
@@ -60,6 +61,7 @@ public class AdminController {
 
             } else {
                 authResponseDto = new AuthResponseDto("Doctor Already Exists", AuthStatus.USER_NOT_CREATED,"",0L);
+                System.out.println(authResponseDto.token());
 
             }
             return ResponseEntity
@@ -80,7 +82,7 @@ public class AdminController {
     public ResponseEntity<AuthResponseDto> updateHospitalDetails(@RequestParam String id, @RequestBody HospitalDetaillsUpdateDTO hospitalDetaillsUpdateDTO) {
 
         try {
-            Hospital hospital = hospitalRepository.getHospitalById(Long.parseLong(id));
+            Hospital hospital = hospitalRepository.getHospitalById(Long.parseLong(id)); //done
             hospital.setName(hospitalDetaillsUpdateDTO.getName());
             hospital.setEmail(hospitalDetaillsUpdateDTO.getEmail());
             hospital.setPhoneNumber(hospitalDetaillsUpdateDTO.getPhoneNumber());
@@ -88,6 +90,7 @@ public class AdminController {
             hospital.setWebsite(hospitalDetaillsUpdateDTO.getWebsite());
             hospital.setDepartment(hospitalDetaillsUpdateDTO.getDepartments());
             hospitalRepository.save(hospital);
+
             var authResponseDto = new AuthResponseDto("Hospital Details Updated Successfully", AuthStatus.SUCCESS,"",0L);
 
             return ResponseEntity
