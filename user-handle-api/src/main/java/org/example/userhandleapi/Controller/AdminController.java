@@ -4,16 +4,15 @@ import lombok.RequiredArgsConstructor;
 import org.example.coreapi.Entities.Department;
 import org.example.coreapi.Entities.Doctor;
 import org.example.coreapi.Entities.Hospital;
+import org.example.coreapi.Entities.User;
 import org.example.coreapi.Repositories.DepartmentRepository;
 import org.example.coreapi.Repositories.DoctorRepository;
 import org.example.coreapi.Repositories.HospitalRepository;
 import org.example.coreapi.Services.AdminService;
 import org.example.coreapi.Services.DoctorServices;
-import org.example.coreapi.Services.PatientService;
-import org.example.userhandleapi.DTO.AuthResponseDto;
-import org.example.userhandleapi.DTO.AuthStatus;
-import org.example.userhandleapi.DTO.DepartmentDTO;
-import org.example.userhandleapi.DTO.HospitalDetaillsUpdateDTO;
+import org.example.coreapi.Services.HospitalServices;
+import org.example.coreapi.Services.UserServices;
+import org.example.userhandleapi.DTO.*;
 import org.example.userhandleapi.Helper.EmailHelper;
 import org.example.userhandleapi.Service.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,57 +22,77 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
 @RestController
-@RequestMapping("/admin")
+@RequestMapping("/user-handle/admin")
 @RequiredArgsConstructor
 public class AdminController {
 
     private final AdminService adminService;
-    private final HospitalRepository hospitalRepository;
-    private final DepartmentRepository departmentRepository;
     private  final EmailService emailService;
     private final DoctorServices doctorServices;
-    private final DoctorRepository doctorRepository;
-    private final PatientService patientService;
-    @Autowired
-    private PasswordEncoder passwordencoder;
+    private final HospitalServices hospitalServices;
+    private final UserServices userServices;
+    private final PasswordEncoder passwordencoder;
 
     private EmailHelper emailHelper;
 
     @PostMapping("/addDoctor/")
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<AuthResponseDto> addDoctor(@RequestParam String id, @RequestBody Doctor doctor) {
-        Hospital hospital = hospitalRepository.getHospitalById(Long.valueOf(id));
-        doctor.setActive(true);
-        doctor.setHospital(hospital);
-        try {
 
-            String genPassword = EmailHelper.generateOTP(6);
-            doctor.setPassword(passwordencoder.encode(genPassword));
-            Doctor doctors = adminService.addDoctor(doctor);
-            emailService.sendPasswordToDoctor(doctor.getEmail(),genPassword);
-            var authResponseDto = new AuthResponseDto("", AuthStatus.USER_NOT_CREATED,"",0L);
-            if (doctors != null) {
-                authResponseDto = new AuthResponseDto("Doctor Added Successfully", AuthStatus.DOCTOR_ADDED_SUCCESSFULLY,doctor.getRole(),0L);
-
-            } else {
-                authResponseDto = new AuthResponseDto("Doctor Already Exists", AuthStatus.USER_NOT_CREATED,"",0L);
-                System.out.println(authResponseDto.token());
-
+        Optional<Hospital> isHospital = hospitalServices.getSpecificHospitalDetails(Integer.parseInt(id));
+        User isDoctor = userServices.userExists(doctor.getPhoneNumber(),doctor.getEmail());
+        if(isDoctor != null)
+        {
+            if(Objects.equals(isDoctor.getEmail(), doctor.getEmail()))
+            {
+                var authResponseDto = new AuthResponseDto("Email already exists", AuthStatus.EMAIL_ALREADY_EXISTS,"",-1L);
+                return ResponseEntity
+                        .status(HttpStatus.CONFLICT)
+                        .body(authResponseDto);
             }
-            return ResponseEntity
-                    .status(HttpStatus.OK)
-                    .body(authResponseDto);
-        } catch (Exception e) {
-            var authResponseDto = new AuthResponseDto(null, AuthStatus.USER_NOT_CREATED,"",0L);
+            else{
+                var authResponseDto = new AuthResponseDto("Phone Number already exists", AuthStatus.PHONE_NUMBER_ALREADY_EXISTS,"",-1L);
+                return ResponseEntity
+                        .status(HttpStatus.CONFLICT)
+                        .body(authResponseDto);
+            }
 
+        }
+        if(isHospital.isPresent())
+        {
+            Hospital hospital = isHospital.get();
+            doctor.setActive(true);
+            doctor.setHospital(hospital);
+            try {
+
+                String genPassword = EmailHelper.generateOTP(6);
+                doctor.setPassword(passwordencoder.encode(genPassword));
+                Doctor doctors = adminService.addDoctor(doctor);
+                emailService.sendPasswordToDoctor(doctor.getEmail(),genPassword);
+                var authResponseDto = new AuthResponseDto("Doctor Added Successfully", AuthStatus.DOCTOR_ADDED_SUCCESSFULLY,doctor.getRole(),doctor.getUser_id());
+                return ResponseEntity
+                        .status(HttpStatus.OK)
+                        .body(authResponseDto);
+            } catch (Exception e) {
+                var authResponseDto = new AuthResponseDto("Something Went Wrong", AuthStatus.SOMETHING_WENT_WRONG,"",-1L);
+
+                return ResponseEntity
+                        .status(HttpStatus.CONFLICT)
+                        .body(authResponseDto);
+            }
+        }
+        else {
+            var authResponseDto = new AuthResponseDto("Hospital Doesn't Exists", AuthStatus.HOSPITAL_NOT_PRESENT,"",-1L);
             return ResponseEntity
                     .status(HttpStatus.CONFLICT)
                     .body(authResponseDto);
         }
+
 
     }
 
@@ -82,22 +101,35 @@ public class AdminController {
     public ResponseEntity<AuthResponseDto> updateHospitalDetails(@RequestParam String id, @RequestBody HospitalDetaillsUpdateDTO hospitalDetaillsUpdateDTO) {
 
         try {
-            Hospital hospital = hospitalRepository.getHospitalById(Long.parseLong(id)); //done
-            hospital.setName(hospitalDetaillsUpdateDTO.getName());
-            hospital.setEmail(hospitalDetaillsUpdateDTO.getEmail());
-            hospital.setPhoneNumber(hospitalDetaillsUpdateDTO.getPhoneNumber());
-            hospital.setAddress(hospitalDetaillsUpdateDTO.getAddress());
-            hospital.setWebsite(hospitalDetaillsUpdateDTO.getWebsite());
-            hospital.setDepartment(hospitalDetaillsUpdateDTO.getDepartments());
-            hospitalRepository.save(hospital);
+            Optional<Hospital> isHospital = hospitalServices.getSpecificHospitalDetails(Integer.parseInt(id));
+            if(isHospital.isPresent())
+            {
+                Hospital hospital = isHospital.get();
+                hospital.setName(hospitalDetaillsUpdateDTO.getName());
+                hospital.setEmail(hospitalDetaillsUpdateDTO.getEmail());
+                hospital.setPhoneNumber(hospitalDetaillsUpdateDTO.getPhoneNumber());
+                hospital.setAddress(hospitalDetaillsUpdateDTO.getAddress());
+                hospital.setWebsite(hospitalDetaillsUpdateDTO.getWebsite());
+                hospital.setDepartment(hospitalDetaillsUpdateDTO.getDepartments());
+                hospitalServices.addHospital(hospital);
+                var authResponseDto = new AuthResponseDto("Hospital Details Updated Successfully", AuthStatus.SUCCESS,"",200L);
 
-            var authResponseDto = new AuthResponseDto("Hospital Details Updated Successfully", AuthStatus.SUCCESS,"",0L);
+                return ResponseEntity
+                        .status(HttpStatus.OK)
+                        .body(authResponseDto);
 
-            return ResponseEntity
-                    .status(HttpStatus.OK)
-                    .body(authResponseDto);
+            }
+            else {
+                var authResponseDto = new AuthResponseDto("Hospital Details Not Updated", AuthStatus.UNSUCCESSFUL,"",-1L);
+
+                return ResponseEntity
+                        .status(HttpStatus.OK)
+                        .body(authResponseDto);
+
+            }
+
         } catch (Exception e) {
-            var authResponseDto = new AuthResponseDto("Hospital Details Not Updated" + " " + e, AuthStatus.UNSUCCESSFUL,"",0L);
+            var authResponseDto = new AuthResponseDto("Hospital Details Not Updated" + " " + e, AuthStatus.UNSUCCESSFUL,"",-1L);
 
             return ResponseEntity
                     .status(HttpStatus.CONFLICT)
@@ -111,9 +143,6 @@ public class AdminController {
     @PutMapping("/doctor-status-update")
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<AuthResponseDto> updateDoctorStatus(@RequestBody String id) {
-        System.out.println(id);
-
-
         try {
 
           Doctor doctor = doctorServices.getDoctorByUserId(Long.valueOf(id));

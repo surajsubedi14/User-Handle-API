@@ -11,17 +11,17 @@ import org.springframework.web.bind.annotation.*;
 
 
 
-@CrossOrigin
+
 @RestController
 @RequiredArgsConstructor
-@RequestMapping ("/patient")
+@RequestMapping ("/user-handle/patient")
 public class PatientController {
 
     @Autowired
     private  PatientService patientService;
-
     @Autowired
     private PasswordEncoder passwordencoder;
+
     @PostMapping("/registerPatient")
     public ResponseEntity<String> registerPatient(@RequestBody Patient patient){
         patient.setPassword(passwordencoder.encode(patient.getPassword()));
