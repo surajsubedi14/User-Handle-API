@@ -2,6 +2,7 @@ package org.example.userhandleapi.Service;
 
 import org.example.coreapi.Entities.OTPStorage;
 import org.example.coreapi.Repositories.OTPStorageRepository;
+import org.example.userhandleapi.DTO.ContactUsDTO;
 import org.example.userhandleapi.Helper.EmailHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.MailException;
@@ -89,13 +90,24 @@ public class EmailService {
         }
     }
 
+    public void sendPromotionMailToDoctor(String to, String doctorName, String hospitalName) {
+
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(to);
+        message.setSubject("Congratulations! Exciting News: Promotion Announcement");
+        message.setText(EmailHelper.getEmailBodyForPromotion(doctorName, hospitalName));
+
+
+        try {
+            javaMailSender.send(message);
+            System.out.println("Email sent successfully!");
+        } catch (MailException e) {
+            System.err.println("Failed to send email: " + e.getMessage());
+        }
+    }
 
 
 
-
-
-
-    // Validate the OTP entered by the user
     public boolean validateOTP(String to, String enteredOTP) {
         OTPStorage otpData = otpSrorageRepo.findEmail(to);
         if (otpData == null || otpData.getExpirationTime().isBefore(Instant.now())) {
@@ -105,5 +117,18 @@ public class EmailService {
             return true;
         }
         return false;
+    }
+
+    public String sendContactUsMail(ContactUsDTO contactUsDTO) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo("eChikitsaapp@gmail.com");
+        message.setSubject(contactUsDTO.getSubject() + " from "+contactUsDTO.getName());
+        message.setText(contactUsDTO.getMessage());
+        try {
+            javaMailSender.send(message);
+            return "Email sent successfully!";
+        } catch (MailException e) {
+            return "Failed to send email: " + e.getMessage();
+        }
     }
 }

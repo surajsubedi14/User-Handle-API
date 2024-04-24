@@ -168,4 +168,29 @@ public class AdminController {
 
 
     }
+
+    @PutMapping("/promote-doctor")
+
+    public ResponseEntity<AuthResponseDto> promoteDoctor(@RequestBody String id) {
+        try {
+
+            Doctor doctor = doctorServices.getDoctorByUserId(Long.valueOf(id));
+            doctor.setSeniorityLevel("senior");
+            adminService.addDoctor(doctor);
+
+            emailService.sendPromotionMailToDoctor(doctor.getEmail(),doctor.getFirstName() +" "+ doctor.getLastName(),doctor.getHospital().getName());
+            var authResponseDto = new AuthResponseDto("Doctor Promoted Successfully", AuthStatus.SUCCESS,"",0L);
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(authResponseDto);
+        } catch (Exception e) {
+            var authResponseDto = new AuthResponseDto("Doctor Status Not Updated" + " " + e, AuthStatus.UNSUCCESSFUL,"",0L);
+
+            return ResponseEntity
+                    .status(HttpStatus.CONFLICT)
+                    .body(authResponseDto);
+        }
+
+
+    }
 }
