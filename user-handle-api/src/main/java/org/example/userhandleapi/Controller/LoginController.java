@@ -30,21 +30,14 @@ import java.util.Objects;
 public class LoginController {
 
     @Autowired
-    private UserInfoService userInfoService;
-
-    @Autowired
     private UserServices userServices;
-
     @Autowired
     private HospitalServices hospitalServices;
-
     @Autowired
     private AuthenticationManager authenticationManager;
     @Autowired
     private JwtService jwtService;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponseDto> addUser(@RequestBody AuthRequest authRequest){
