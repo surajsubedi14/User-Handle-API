@@ -101,7 +101,7 @@ public class SecurityConfig {
         corsConfiguration.setAllowedMethods(List.of("*"));
         corsConfiguration.addAllowedHeader("*");
 
-        corsConfiguration.setAllowedOrigins(List.of("http://localhost:3000", "http://localhost:8080","http://localhost:8761","http://localhost:8083"));
+        corsConfiguration.setAllowedOrigins(List.of("http://localhost:3000","http://localhost:3001", "http://localhost:3002","http://localhost:8080","http://localhost:8761","http://localhost:8083"));
         corsConfiguration.setAllowedHeaders(List.of("Content-Type","text/plain","Authorization"));
 
         var source = new UrlBasedCorsConfigurationSource();
