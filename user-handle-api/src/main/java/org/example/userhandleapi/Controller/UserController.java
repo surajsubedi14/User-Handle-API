@@ -10,10 +10,7 @@ import org.example.coreapi.Services.DoctorServices;
 import org.example.coreapi.Services.HospitalServices;
 import org.example.coreapi.Services.PatientService;
 import org.example.coreapi.Services.UserServices;
-import org.example.userhandleapi.DTO.AuthRequest;
-import org.example.userhandleapi.DTO.ResetPasswordRequestDTO;
-import org.example.userhandleapi.DTO.UpdatePasswordDTO;
-import org.example.userhandleapi.DTO.otpStoreDTO;
+import org.example.userhandleapi.DTO.*;
 import org.example.userhandleapi.Service.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -103,6 +100,20 @@ public class UserController {
 
             }
 
+
+        } catch (Exception e) {
+            return e.getMessage();
+
+        }
+
+
+    }
+
+    @PostMapping("/contact-us")
+    public String contact(@RequestBody ContactUsDTO contactUsDTO) {
+        try {
+
+            return emailService.sendContactUsMail(contactUsDTO);
 
         } catch (Exception e) {
             return e.getMessage();

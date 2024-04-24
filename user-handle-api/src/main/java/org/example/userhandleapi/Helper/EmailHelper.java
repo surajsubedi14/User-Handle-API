@@ -52,4 +52,22 @@ public class EmailHelper {
         return otp.toString();
     }
 
+    public static String getEmailBodyForPromotion(String doctorName, String hospitalName) {
+        return "Dear Recipient,\n\n" +
+                "We are pleased to inform you that the status of the following doctor has been updated:\n\n" +
+                "- Doctor Name: " + doctorName + "\n" +
+                "- Hospital Name: " + hospitalName + "\n" +
+                "\n" +
+                "Action Taken: Promoted to Senior Doctor"  + "\n\n" +
+                doctorName + "'s profile has been promoted to Senior Doctor" + ". " +
+                "Please update any records or scheduling systems accordingly to reflect this change.\n\n" +
+                "If you have any questions or require further assistance, please don't hesitate to contact us.\n\n" +
+                "Thank you for your attention to this matter.\n\n" +
+                "Sincerely,\n" +
+                "Your Name\n" +
+                "Your Position/Department\n" +
+                "Your Contact Information";
+    }
+
+
 }

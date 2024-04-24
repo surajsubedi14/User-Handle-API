@@ -51,11 +51,8 @@ public class SecurityConfig {
         //filter our request
         httpSecurity.authorizeHttpRequests(
                 requestMatcher->
-                        requestMatcher.requestMatchers("/user-handle/auth/login","/user-handle/auth/login-using-otp","/user-handle/patient/registerPatient","/user-handle/admin/registerDoctor", "/user-handle/auth/reset-password-otp","/user-handle/auth/reset-password","/user-handle/email/sendEmail","/user-handle/email/valOtp","/user-handle/hospital/add-hospital").permitAll()
-//                                .requestMatchers("/api/signUp").permitAll()
-//                                .requestMatchers("/api/hospital/register").permitAll()
-//                                .requestMatchers("/api/hospital/register").permitAll()
-                                //.requestMatchers("/auth/getUsersr").hasRole("USER_ROLES")
+                        requestMatcher.requestMatchers("/user-handle/auth/login","/user-handle/auth/contact-us","/user-handle/auth/login-using-otp","/user-handle/patient/registerPatient","/user-handle/admin/registerDoctor", "/user-handle/auth/reset-password-otp","/user-handle/auth/reset-password","/user-handle/email/sendEmail","/user-handle/email/valOtp","/user-handle/hospital/add-hospital").permitAll()
+//
                                 .anyRequest().authenticated()
 
 
