@@ -23,7 +23,6 @@ public class HospitalController {
             if (hospitalServices.existHospital(hospital.getEmail()) != null) {
                 return ResponseEntity.ok("Hospital already exists");
             }
-            // Save the new user
             hospital.setPassword(passwordencoder.encode(hospital.getPassword()));
             hospitalServices.addHospital(hospital);
 
