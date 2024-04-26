@@ -105,7 +105,7 @@ public class AdminController {
             if(isHospital.isPresent())
             {
                 Hospital hospital = isHospital.get();
-                hospital.setName(hospitalDetaillsUpdateDTO.getName());
+                hospital.setName(hospitalDetaillsUpdateDTO.getHospital_name());
                 hospital.setEmail(hospitalDetaillsUpdateDTO.getEmail());
                 hospital.setPhoneNumber(hospitalDetaillsUpdateDTO.getPhoneNumber());
                 hospital.setAddress(hospitalDetaillsUpdateDTO.getAddress());
