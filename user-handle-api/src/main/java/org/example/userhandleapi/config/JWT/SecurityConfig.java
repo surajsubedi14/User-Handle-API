@@ -92,20 +92,20 @@ public class SecurityConfig {
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
-    private static CorsConfigurationSource getConfigurationSource(){
-        var corsConfiguration = new CorsConfiguration();
-        corsConfiguration.addAllowedMethod("OPTIONS");
-        corsConfiguration.setAllowedMethods(List.of("*"));
-        corsConfiguration.addAllowedHeader("*");
-
-        corsConfiguration.setAllowedOrigins(List.of("http://localhost:3000","http://localhost:3001", "http://localhost:3002","http://localhost:8080","http://localhost:8761","http://localhost:8083"));
-        corsConfiguration.setAllowedHeaders(List.of("Content-Type","text/plain","Authorization"));
-
-        var source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", corsConfiguration);
-
-        return  source;
-
-    }
+//    private static CorsConfigurationSource getConfigurationSource(){
+//        var corsConfiguration = new CorsConfiguration();
+//        corsConfiguration.addAllowedMethod("OPTIONS");
+//        corsConfiguration.setAllowedMethods(List.of("*"));
+//        corsConfiguration.addAllowedHeader("*");
+//
+//        corsConfiguration.setAllowedOrigins(List.of("http://localhost:3000","http://localhost:3001", "http://localhost:3002","http://localhost:8080","http://localhost:8761","http://localhost:8083"));
+//        corsConfiguration.setAllowedHeaders(List.of("Content-Type","text/plain","Authorization"));
+//
+//        var source = new UrlBasedCorsConfigurationSource();
+//        source.registerCorsConfiguration("/**", corsConfiguration);
+//
+//        return  source;
+//
+//    }
 
 }

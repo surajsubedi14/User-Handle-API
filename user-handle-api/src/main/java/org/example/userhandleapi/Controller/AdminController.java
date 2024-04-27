@@ -72,6 +72,7 @@ public class AdminController {
 
                 String genPassword = EmailHelper.generateOTP(6);
                 doctor.setPassword(passwordencoder.encode(genPassword));
+//                doctor.setSeniorityLevel("junior");
                 Doctor doctors = adminService.addDoctor(doctor);
                 emailService.sendPasswordToDoctor(doctor.getEmail(),genPassword);
                 var authResponseDto = new AuthResponseDto("Doctor Added Successfully", AuthStatus.DOCTOR_ADDED_SUCCESSFULLY,doctor.getRole(),doctor.getUser_id());
@@ -105,7 +106,7 @@ public class AdminController {
             if(isHospital.isPresent())
             {
                 Hospital hospital = isHospital.get();
-                hospital.setName(hospitalDetaillsUpdateDTO.getName());
+                hospital.setName(hospitalDetaillsUpdateDTO.getHospital_name());
                 hospital.setEmail(hospitalDetaillsUpdateDTO.getEmail());
                 hospital.setPhoneNumber(hospitalDetaillsUpdateDTO.getPhoneNumber());
                 hospital.setAddress(hospitalDetaillsUpdateDTO.getAddress());

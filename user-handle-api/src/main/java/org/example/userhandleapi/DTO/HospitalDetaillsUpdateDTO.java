@@ -8,7 +8,7 @@ import java.util.Set;
 
 @Data
 public class HospitalDetaillsUpdateDTO {
-    private String name;
+    private String hospital_name;
     private String email;
     private String phoneNumber;
     private String address;
