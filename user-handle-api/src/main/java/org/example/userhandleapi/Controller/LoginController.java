@@ -1,9 +1,12 @@
 package org.example.userhandleapi.Controller;
 
+import org.example.coreapi.Entities.Doctor;
 import org.example.coreapi.Entities.Hospital;
 import org.example.coreapi.Entities.User;
 import org.example.coreapi.Repositories.HospitalRepository;
 import org.example.coreapi.Repositories.UserRepository;
+import org.example.coreapi.Services.AdminService;
+import org.example.coreapi.Services.DoctorServices;
 import org.example.coreapi.Services.HospitalServices;
 import org.example.coreapi.Services.UserServices;
 import org.example.userhandleapi.DTO.AuthResponseDto;
@@ -37,6 +40,10 @@ public class LoginController {
     private AuthenticationManager authenticationManager;
     @Autowired
     private JwtService jwtService;
+    @Autowired
+    private  AdminService adminService;
+    @Autowired
+    DoctorServices doctorServices;
 
 
     @PostMapping("/login")
@@ -56,6 +63,12 @@ public class LoginController {
         }
         else if(authenticate.isAuthenticated() && user != null && (Objects.equals(user.getRole(), authRequest.getRole())) ) {
             var jwtToken = jwtService.generateToken(authRequest.getEmail());
+            if(Objects.equals(user.getRole(), "DOCTOR"))
+            {
+                Doctor doctor = (Doctor) user;
+                doctor.setAvailability(true);
+                adminService.addDoctor(doctor);
+            }
             var authResponseDto = new AuthResponseDto(jwtToken, AuthStatus.LOGIN_SUCCESS,user.getRole(),user.getUser_id());
             return ResponseEntity
                     .status(HttpStatus.OK)
@@ -88,10 +101,19 @@ public class LoginController {
 
     }
 
+    @PostMapping("/doctor-logout")
+    public void logoutDoctor(@RequestParam String id) {
+        Doctor doctor = (Doctor) doctorServices.getDoctorByUserId(Long.valueOf(id));
+        doctor.setAvailability(false);
+        adminService.addDoctor(doctor);
+        SecurityContextHolder.clearContext();
+
+    }
+
     @PostMapping("/logout")
     public void logout() {
-
         SecurityContextHolder.clearContext();
+
     }
 
 
