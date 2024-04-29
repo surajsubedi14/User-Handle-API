@@ -1,10 +1,7 @@
 package org.example.userhandleapi.Controller;
 import lombok.RequiredArgsConstructor;
 
-import org.example.coreapi.Entities.Department;
-import org.example.coreapi.Entities.Doctor;
-import org.example.coreapi.Entities.Hospital;
-import org.example.coreapi.Entities.User;
+import org.example.coreapi.Entities.*;
 import org.example.coreapi.Repositories.DepartmentRepository;
 import org.example.coreapi.Repositories.DoctorRepository;
 import org.example.coreapi.Repositories.HospitalRepository;
@@ -67,6 +64,8 @@ public class AdminController {
         {
             Hospital hospital = isHospital.get();
             doctor.setActive(true);
+            Feedback feedback = new Feedback();
+            doctor.setFeedback(feedback);
             doctor.setHospital(hospital);
             try {
 
@@ -105,7 +104,7 @@ public class AdminController {
             if(isHospital.isPresent())
             {
                 Hospital hospital = isHospital.get();
-                hospital.setName(hospitalDetaillsUpdateDTO.getName());
+                hospital.setName(hospitalDetaillsUpdateDTO.getHospital_name());
                 hospital.setEmail(hospitalDetaillsUpdateDTO.getEmail());
                 hospital.setPhoneNumber(hospitalDetaillsUpdateDTO.getPhoneNumber());
                 hospital.setAddress(hospitalDetaillsUpdateDTO.getAddress());
