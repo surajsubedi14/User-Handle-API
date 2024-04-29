@@ -6,3 +6,13 @@ eureka:
     register-with-eureka: true
     service-url:
       defaultZone: http://localhost:8761/eureka
+openapi:
+  service:
+    title: user-handle doc
+    version: 1.0.0
+    url: https://localhost:8083 #api gateway url
+springdoc:
+  api-docs:
+    path: /user-handle/v3/api-docs
+  swagger-ui:
+    path: /user-handle/swagger-ui.html

@@ -51,7 +51,7 @@ public class SecurityConfig {
         //filter our request
         httpSecurity.authorizeHttpRequests(
                 requestMatcher->
-                        requestMatcher.requestMatchers("/user-handle/auth/login","/user-handle/auth/contact-us","/user-handle/auth/login-using-otp","/user-handle/patient/registerPatient","/user-handle/admin/registerDoctor", "/user-handle/auth/reset-password-otp","/user-handle/auth/reset-password","/user-handle/email/sendEmail","/user-handle/email/valOtp","/user-handle/hospital/add-hospital").permitAll()
+                        requestMatcher.requestMatchers("/user-handle/auth/login","/user-handle/auth/contact-us","/user-handle/auth/login-using-otp","/user-handle/patient/registerPatient","/user-handle/admin/registerDoctor", "/user-handle/auth/reset-password-otp","/user-handle/auth/reset-password","/user-handle/email/sendEmail","/user-handle/email/valOtp","/user-handle/hospital/add-hospital", "/user-handle/v3/api-docs").permitAll()
 //
                                 .anyRequest().authenticated()
 

@@ -35,7 +35,7 @@ public class AdminController {
     private final UserServices userServices;
     private final PasswordEncoder passwordencoder;
 
-    private EmailHelper emailHelper;
+
 
     @PostMapping("/addDoctor/")
     @PreAuthorize("hasAuthority('ADMIN')")
