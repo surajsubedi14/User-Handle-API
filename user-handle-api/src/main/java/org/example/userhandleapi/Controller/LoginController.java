@@ -101,6 +101,7 @@ public class LoginController {
 
     }
 
+
     @GetMapping("/doctor-logout/{id}")
     public void logoutDoctor(@PathVariable long id) {
         System.out.println(id);
