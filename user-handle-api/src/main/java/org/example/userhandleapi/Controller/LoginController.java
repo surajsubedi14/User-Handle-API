@@ -101,8 +101,9 @@ public class LoginController {
 
     }
 
-    @PostMapping("/doctor-logout")
-    public void logoutDoctor(@RequestParam String id) {
+    @GetMapping("/doctor-logout/{id}")
+    public void logoutDoctor(@PathVariable long id) {
+        System.out.println(id);
         Doctor doctor = (Doctor) doctorServices.getDoctorByUserId(Long.valueOf(id));
         doctor.setAvailability(false);
         adminService.addDoctor(doctor);
@@ -110,7 +111,7 @@ public class LoginController {
 
     }
 
-    @PostMapping("/logout")
+    @GetMapping("/logout")
     public void logout() {
         SecurityContextHolder.clearContext();
 
